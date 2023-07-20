@@ -34,7 +34,9 @@ do_token = "YOUR_DIGITALOCEAN_API_TOKEN"
 terraform init
 terraform plan
 terraform apply --auto-approve
+
 ```
+
 ## Accessing WordPress
 
 After the Terraform deployment is complete, you will find the IP address of the WordPress Droplet in a file named <projectname>-IP-Address. Use this IP address the wordpress server.
