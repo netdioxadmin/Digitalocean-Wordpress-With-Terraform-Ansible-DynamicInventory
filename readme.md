@@ -36,9 +36,7 @@ terraform apply --auto-approve
 
 ## Accessing WordPress
 
-After the Terraform deployment is complete, you will find the IP address of the WordPress Droplet in a file named <projectname>-IP-Address. Use this IP address the wordpress server.
-Go to the Ansible Directory and run the play book `main.yml` this will install necessary packages and set mysql rootpassword and remove the test database and things. 
-Then run the `wordpress.yml` play book and wordpress will be installed. 
+The IP address of the WordPress Droplet can be found in a file with the  <projectname>-IP-Address after the Terraform deployment is finished. Use the WordPress server at this IP address. Run the primary play book from the Ansible Directory.This will configure the mysql root password, install the required packages, delete the test database, and other things. After that, launch the wordpress.yml playbook to install WordPress.
 
 ```
 ansible-playbook -i inventory main.yml
