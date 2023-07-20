@@ -18,7 +18,6 @@ Before using this project, ensure you have the following prerequisites:
 
 git clone https://github.com/netdioxadmin/Digitalocean-Wordpress-With-Terraform-Ansible-DynamicInventory.git
 
-sql
 
 
 2. Create a file named `terraform.tfvars` in the root of the project and set your DigitalOcean API token:
@@ -35,11 +34,16 @@ terraform init
 terraform plan
 terraform apply --auto-approve
 
-```
-
 ## Accessing WordPress
 
 After the Terraform deployment is complete, you will find the IP address of the WordPress Droplet in a file named <projectname>-IP-Address. Use this IP address the wordpress server.
+Go to the Ansible Directory and run the play book `main.yml` this will install necessary packages and set mysql rootpassword and remove the test database and things. 
+Then run the `wordpress.yml` play book and wordpress will be installed. 
+
+```
+ansible-playbook -i inventory main.yml
+ansible-playbook -i inventory wordpress.yml
+```
 
 ## Dynamic Inventory for Ansible
 
