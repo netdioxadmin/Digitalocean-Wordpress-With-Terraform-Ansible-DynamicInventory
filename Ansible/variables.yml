@@ -1,5 +1,5 @@
 mysql_root_password: "Qw1ed2sa3@123#"
-domain_name: vaves.in
+domain_name: example.com
 wp_url: https://wordpress.org/latest.zip
 mysql_extra_database: wordpress_db
 mysql_extra_user: wordpress_user
