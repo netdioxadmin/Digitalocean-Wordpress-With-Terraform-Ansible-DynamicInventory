@@ -3,7 +3,7 @@ variable "do_token" {
 }
 
 variable "projectname" {
-  default = "vaves.in"
+  default = "example.com"
 }
 
 variable "region" {
