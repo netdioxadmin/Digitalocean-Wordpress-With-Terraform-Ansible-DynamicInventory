@@ -1,0 +1,7 @@
+mysql_root_password: "Qw1ed2sa3@123#"
+domain_name: vaves.in
+wp_url: https://wordpress.org/latest.zip
+mysql_extra_database: wordpress_db
+mysql_extra_user: wordpress_user
+mysql_extra_user_password: "wordpress@123#"
+apache_user: www-data

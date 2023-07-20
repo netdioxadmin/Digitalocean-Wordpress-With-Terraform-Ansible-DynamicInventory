@@ -1,0 +1,73 @@
+---
+  - hosts: wordpress
+    vars_files:
+      - variables.yml
+    tasks: 
+      - name: Install Apache and Mariadb and php server
+        apt:
+          name: "{{ item }}"
+          state: present
+          update_cache: true
+        loop:
+          - nginx
+          - php
+          - mariadb-server
+          - libapache2-mod-php
+          - php-mysql
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-xml
+          - php-xmlrpc
+          - php-soap
+          - php-intl
+          - php-zip
+          - php-pear
+          - certbot
+          - python3-certbot-nginx
+          - pip
+      - name: Ensure Apache and Mysql is Started
+        service:
+          name: "{{ item }}"
+          state: started
+          enabled: true
+        loop:
+          - nginx
+          - mariadb
+      - name: Installing Python modele for mysql
+        pip:
+          name: "{{ item }}"
+        loop:
+          - PyMySQL
+      - name: Set my.cnf file
+        template:
+          src: ./dotmy.cnf
+          dest: /root/.my.cnf
+          mode: 0600
+      - name: Update Mariadb root Password
+        mysql_user:
+          name: root
+          host: "{{ item }}"
+          password: "{{ mysql_root_password }}"
+          login_unix_socket: /run/mysqld/mysqld.sock
+        loop:
+          - 127.0.0.1
+          - ::1
+          - localhost
+      - name: Delete Anonymous User
+        mysql_user:
+          name: " "
+          host: "{{ item }}"
+          state: absent
+        loop:
+          - 127.0.0.1
+          - "{{ ansible_nodename }}"
+      - name: Delet  Hostname based Mysql User
+        mysql_user:
+          name: root
+          host: "{{ ansible_nodename }}"
+          state: absent
+      - name: Remove Test database
+        mysql_db:
+          name: test
+          state: absent

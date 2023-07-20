@@ -1,0 +1,93 @@
+---
+- hosts: wordpress
+  vars_files:
+    - variables.yml
+  become: true
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop:
+        - nginx
+        - php-fpm
+        - php-mysql
+        - zip
+      tags:
+        - install_pkgs
+
+    - name: Saving Nginx confign to site-available
+      template:
+        src: ./nginxsample.tmpl
+        dest: /etc/nginx/sites-available/{{ domain_name }}.conf
+        mode: 0644
+      tags:
+        - create_site
+    - name: Download wordpress
+      get_url:
+        url: "{{ wp_url }}"
+        dest: /tmp/wordpress.zip
+      tags:
+        - wordpress
+    - name: Unzip Wordpress file
+      unarchive:
+        src: /tmp/wordpress.zip
+        dest: /tmp
+        remote_src: true
+      tags:
+        - wordpress
+    - name: Copy Wordpress Files to Document Root
+      copy:
+        src: /tmp/wordpress/
+        dest: /var/www/{{ domain_name }}
+        remote_src: true
+        mode: 0755
+        owner: "{{apache_user}}"
+        group: "{{apache_user}}"
+      tags:
+        - wordpress
+    - name: Accomodating Database setting to wp-config
+      template:
+        src: ./wp-config.php.tmpl
+        dest: /var/www/{{ domain_name }}/wp-config.php
+        mode: 0644
+        owner: "{{apache_user}}"
+        group: "{{apache_user}}"
+      tags:
+        - wordpress
+    - name: Creating DB for Wordpress
+      mysql_db:
+        name: "{{ mysql_extra_database }}"
+        state: present
+      tags:
+        - wordpress
+    - name: Creating Wordpress User
+      mysql_user:
+        user: "{{ mysql_extra_user }}"
+        host: "%"
+        password: "{{ mysql_extra_user_password }}"
+        priv: "{{ mysql_extra_database }}.*:ALL"
+        state: present
+      tags:
+        - wordpress
+    - name: Enabling Nginx confign
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}.conf
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}.conf
+        state: link
+    - name: Nginx Config check
+      shell: nginx -t
+      register: nginx_check
+      tags:
+        - wordpress
+    - name: Print Output
+      debug:
+        var: nginx_check
+    - name: Restart if Syntax is Okay
+      service:
+        name: "{{ item }}"
+        state: restarted
+      when: nginx_check.rc == 0
+      loop:
+        - nginx
